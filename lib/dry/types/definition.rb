@@ -98,6 +98,15 @@ module Dry
         value.is_a?(primitive)
       end
       alias_method :valid?, :primitive?
+
+      # Return AST representation of a type definition
+      #
+      # @api public
+      #
+      # @return [Array]
+      def to_ast
+        [:definition, [:primitive, primitive]]
+      end
     end
   end
 end

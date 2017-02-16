@@ -65,6 +65,13 @@ module Dry
         true
       end
 
+      # @api public
+      #
+      # @see Definition#to_ast
+      def to_ast
+        [:constrained, [type.to_ast, rule.to_ast]]
+      end
+
       private
 
       # @param [Object] response
