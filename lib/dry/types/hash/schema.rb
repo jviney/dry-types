@@ -57,7 +57,17 @@ module Dry
           end
         end
 
+        def to_ast
+          [:hash,
+           [hash_type,
+            [:member_types, [member_types.values.map(&:to_ast)]]]]
+        end
+
         private
+
+        def hash_type
+          :schema
+        end
 
         # @param [Hash] hash
         # @return [Hash{Symbol => Object}]
@@ -113,6 +123,10 @@ module Dry
       class Permissive < Schema
         private
 
+        def hash_type
+          :permissive
+        end
+
         # @param [Symbol] key
         # @raise [MissingKeyError] when key is missing in given input
         def resolve_missing_value(_, key, _)
@@ -130,6 +144,10 @@ module Dry
       #     # => Dry::Types::SchemaKeyError: :email is missing in Hash input
       class Strict < Permissive
         private
+
+        def hash_type
+          :strict
+        end
 
         # @param [Hash] hash
         # @return [Hash{Symbol => Object}]
@@ -154,6 +172,10 @@ module Dry
       # @see Default::Callable#evaluate
       class StrictWithDefaults < Strict
         private
+
+        def hash_type
+          :strict_with_defaults
+        end
 
         # @param [Hash] result
         # @param [Symbol] key
@@ -197,11 +219,21 @@ module Dry
             block ? yield(result) : result
           end
         end
+
+        private
+
+        def hash_type
+          :weak
+        end
       end
 
       # {Symbolized} hash will turn string key names into symbols.
       class Symbolized < Weak
         private
+
+        def hash_type
+          :symbolized
+        end
 
         def resolve(hash)
           result = {}
