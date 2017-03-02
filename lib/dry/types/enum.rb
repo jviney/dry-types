@@ -35,6 +35,13 @@ module Dry
         type[value || input]
       end
       alias_method :[], :call
+
+      # @api public
+      #
+      # @see Definition#to_ast
+      def to_ast
+        [:enum, [type.to_ast]]
+      end
     end
   end
 end
