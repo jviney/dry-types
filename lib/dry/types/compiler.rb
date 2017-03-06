@@ -27,12 +27,10 @@ module Dry
       end
 
       def visit_definition(node)
-        _, primitive = node
-
-        if registry.registered?(primitive)
-          registry[primitive]
+        if registry.registered?(node)
+          registry[node]
         else
-          Definition.new(primitive)
+          Definition.new(node)
         end
       end
 
