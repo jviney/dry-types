@@ -36,7 +36,7 @@ module Dry
                      else
                        Definition.new(primitive)
                      end
-        meta.any? ? definition.meta(meta) : definition
+        meta.empty? ? definition : definition.meta(meta)
       end
 
       def visit_sum(node)
