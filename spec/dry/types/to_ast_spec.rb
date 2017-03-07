@@ -60,7 +60,7 @@ RSpec.describe Dry::Types, '#to_ast' do
 
         specify do
           expect(type.to_ast).
-            to eql(["hash_#{schema}".to_sym, [ member_types_ast ]])
+            to eql([:hash ,[ schema, member_types_ast ]])
         end
       end
     end

@@ -59,8 +59,9 @@ module Dry
 
         def to_ast
           [
-            "hash_#{hash_type}".to_sym,
+            :hash,
             [
+              hash_type,
               member_types.map { |name, member| [:member, [name, member.to_ast]] }
             ]
           ]
