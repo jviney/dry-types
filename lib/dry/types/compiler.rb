@@ -3,6 +3,8 @@ module Dry
     class Compiler
       attr_reader :registry
 
+      HASH_TYPE_REGEX = %r[(.+)_(.+)].freeze
+
       def initialize(registry)
         @registry = registry
       end
@@ -12,7 +14,7 @@ module Dry
       end
 
       def visit(node)
-        method, *args = node
+        method, *args = extract_method_and_args(node)
         send(:"visit_#{method}", *args)
       end
 
@@ -45,8 +47,7 @@ module Dry
         registry['array'].member(call(node))
       end
 
-      def visit_hash(node)
-        constructor, schema = node
+      def visit_hash(constructor, schema)
         merge_with('hash', constructor, schema)
       end
 
@@ -59,6 +60,16 @@ module Dry
         registry[hash_id].__send__(
           constructor, schema.first.map { |key| visit(key) }.reduce({}, :merge)
         )
+      end
+
+      def extract_method_and_args(node)
+        method, *args = node
+        if method.to_s.include?('hash')
+          result = method.to_s.match(HASH_TYPE_REGEX)
+          method, schema = result[1..2]
+          args = args.unshift(schema)
+        end
+        [method, *args]
       end
     end
   end
