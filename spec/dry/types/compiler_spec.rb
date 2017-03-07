@@ -4,14 +4,22 @@ RSpec.describe Dry::Types::Compiler, '#call' do
   subject(:compiler) { Dry::Types::Compiler.new(Dry::Types) }
 
   it 'returns existing definition' do
-    ast = [:definition, Hash]
+    ast = [:definition, Hash, {}]
     type = compiler.(ast)
 
     expect(type).to be(Dry::Types['hash'])
   end
 
+  it 'returns exiting definition with meta inforamtion' do
+    ast = [:definition, String, { primary_key: true }]
+    type = compiler.(ast)
+
+    expect(type).to eq(Dry::Types['string'].meta({primary_key: true}))
+    expect(type.meta[:primary_key]).to be_truthy
+  end
+
   it 'builds a plain definition' do
-    ast = [:definition, Set]
+    ast = [:definition, Set, {}]
     type = compiler.(ast)
     expected = Dry::Types::Definition.new(Set)
 

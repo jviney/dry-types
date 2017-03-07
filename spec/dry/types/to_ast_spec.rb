@@ -8,7 +8,16 @@ RSpec.describe Dry::Types, '#to_ast' do
 
     specify do
       expect(type.to_ast).
-        to eql([:definition, String])
+        to eql([:definition, String, {}])
+    end
+  end
+
+  context 'with meta' do
+    subject(:type) { Dry::Types::Definition.new(String).meta(primary_key: true, auto_increment: true) }
+
+    specify do
+      expect(type.to_ast).
+        to eql([:definition, String, {:primary_key=>true, :auto_increment=>true}])
     end
   end
 
@@ -18,8 +27,8 @@ RSpec.describe Dry::Types, '#to_ast' do
     specify do
       expect(type.to_ast).
         to eql([:sum, [
-                  [:definition, String],
-                  [:definition, Integer]
+                  [:definition, String, {}],
+                  [:definition, Integer, {}]
                 ]])
     end
   end
@@ -30,7 +39,7 @@ RSpec.describe Dry::Types, '#to_ast' do
     specify do
       expect(type.to_ast).
         to eql([:constrained, [
-                  [:definition, Integer],
+                  [:definition, Integer, {}],
                   [:predicate, [:type?, [[:type, Integer], [:input, Undefined]]]]
                ]])
     end
@@ -41,7 +50,7 @@ RSpec.describe Dry::Types, '#to_ast' do
 
     specify do
       expect(type.to_ast).
-        to eql([:definition, Hash])
+        to eql([:definition, Hash, {}])
     end
 
     %i(schema weak permissive strict strict_with_defaults symbolized).each do |schema|
@@ -69,7 +78,7 @@ RSpec.describe Dry::Types, '#to_ast' do
                      :constrained,
                      [
                        [
-                         :definition , String
+                         :definition , String, {}
                        ],
                        [
                          :and,
@@ -104,7 +113,7 @@ RSpec.describe Dry::Types, '#to_ast' do
                      :constrained,
                      [
                        [
-                         :constructor, [[:definition, String], fn ]
+                         :constructor, [[:definition, String, {}], fn ]
                        ],
                        [
                          :predicate, [:min_size?, [[:num, 5], [:input, Undefined]]]
@@ -123,7 +132,7 @@ RSpec.describe Dry::Types, '#to_ast' do
 
     specify do
       expect(type.to_ast).
-        to eql([:constructor, [[:definition, String], fn ]])
+        to eql([:constructor, [[:definition, String, {}], fn ]])
     end
   end
 
@@ -132,7 +141,7 @@ RSpec.describe Dry::Types, '#to_ast' do
 
     specify do
       expect(type.to_ast).
-        to eql([:definition, Array])
+        to eql([:definition, Array, {}])
     end
 
     context 'Member' do
@@ -142,7 +151,7 @@ RSpec.describe Dry::Types, '#to_ast' do
 
       specify do
         expect(type.to_ast).
-          to eql([:array, [:definition, String]])
+          to eql([:array, [:definition, String, {}]])
       end
     end
   end

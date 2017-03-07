@@ -11,8 +11,9 @@ module Dry
         visit(ast)
       end
 
-      def visit(node, *args)
-        send(:"visit_#{node[0]}", node[1], *args)
+      def visit(node)
+        method, *args = node
+        send(:"visit_#{method}", *args)
       end
 
       def visit_constructor(node)
@@ -22,16 +23,18 @@ module Dry
       end
 
       def visit_safe(node)
-        type, args = node[0]
-        Types::Safe.new(send(:"visit_#{type}", args))
+        method, *args = node
+        Types::Safe.new(send(:"visit_#{method}", *args))
       end
 
-      def visit_definition(node)
-        if registry.registered?(node)
-          registry[node]
-        else
-          Definition.new(node)
-        end
+      def visit_definition(*node)
+        primitive, meta = node
+        definition = if registry.registered?(primitive)
+                       registry[primitive]
+                     else
+                       Definition.new(primitive)
+                     end
+        meta.any? ? definition.meta(meta) : definition
       end
 
       def visit_sum(node)
